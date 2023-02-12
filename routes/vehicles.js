@@ -4,9 +4,9 @@ const router = express.Router();
 const _ = require("lodash");
 const auth = require("../middleware/auth");
 
-router.get("/", async (req, res) => {
-  const search = { $regex: "(?i)" + req.query.search + "(?-i)" };
-  const vehicles = await Vehicle.find({ model: search }).sort("model");
+router.get("/myads", auth, async (req, res) => {
+  const vehicles = await Vehicle.find({ user: req.user._id });
+  if (!vehicles) return res.status(404).send("Vehicles not found.");
   res.send(vehicles);
 });
 
@@ -19,11 +19,19 @@ router.get("/:id", async (req, res) => {
   res.send(vehicle);
 });
 
+router.get("/", async (req, res) => {
+  const search = { $regex: "(?i)" + req.query.search + "(?-i)" };
+  const vehicles = await Vehicle.find({ model: search }).sort("model");
+  res.send(vehicles);
+});
+
 router.post("/", auth, async (req, res) => {
   const { body } = req;
-  const { error } = validate(body);
-  if (error) return res.status(400).send(error.details[0].message);
   body.user = req.user._id;
+  const { error } = validate(body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
   const vehicle = new Vehicle(
     _.pick(body, [
       "brand",
@@ -45,6 +53,7 @@ router.post("/", auth, async (req, res) => {
 
 router.put("/:id", auth, async (req, res) => {
   const { body } = req;
+  body.user = req.user._id;
   let vehicle = await Vehicle.findById(req.params.id);
   if (!vehicle) return res.status(404).send("Vehicle not found");
 

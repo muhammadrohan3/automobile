@@ -11,16 +11,34 @@ const config = require("config");
 router.post("/", async (req, res) => {
   const { body } = req;
   const { error } = validate(body);
-  if (error) return res.status(400).send(error.details[0].message);
-
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
   let user = await User.findOne({ email: body.email });
-  if (!user) return res.status(400).send("Invalid email or password.");
+  if (!user) {
+    return res.status(400).send("Invalid email or password.");
+  }
 
   const validPassword = await bcrypt.compare(body.password, user.password);
-  if (!validPassword) return res.status(400).send("Invalid email or password.");
-
+  if (!validPassword) {
+    return res.status(400).send("Invalid email or password.");
+  }
   const token = user.generateAuthToken();
-  res.send(token);
+  res
+    .header("x-auth-token", token)
+    .header("access-control-expose-headers", "x-auth-token")
+    .send(
+      _.pick(user, [
+        "firstName",
+        "lastName",
+        "email",
+        "password",
+        "street",
+        "city",
+        "zip",
+        "imageSrc",
+      ])
+    );
 });
 
 validate = (body) => {

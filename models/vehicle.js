@@ -45,7 +45,7 @@ validate = (req) => {
     location: Joi.string().min(4).max(40).required(),
     user: Joi.objectId().required(),
     status: Joi.string().valid("Sold", "Available"),
-    imageSrc: Joi.array().required(),
+    imageSrc: Joi.array(),
   });
   return schema.validate(req);
 };

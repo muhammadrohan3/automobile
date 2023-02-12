@@ -6,20 +6,22 @@ const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 
-router.get("/", [auth, admin], async (req, res) => {
-  const users = await User.find().sort("firstName");
-  res.send(users);
-});
-
 router.get("/me", auth, async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
   res.send(user);
 });
 
+router.get("/", [auth, admin], async (req, res) => {
+  const users = await User.find().sort("firstName");
+  res.send(users);
+});
+
 router.post("/", async (req, res) => {
   const { body } = req;
   const { error } = validate(body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
 
   let user = await User.findOne({ email: body.email });
   if (user) return res.status(400).send("User already registered.");
@@ -44,6 +46,7 @@ router.post("/", async (req, res) => {
   const token = user.generateAuthToken();
   res
     .header("x-auth-token", token)
+    .header("access-control-expose-headers", "x-auth-token")
     .send(
       _.pick(user, [
         "firstName",

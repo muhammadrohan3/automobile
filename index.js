@@ -1,6 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const app = express();
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 const parts = require("./routes/parts");
 const users = require("./routes/users");
@@ -28,5 +34,5 @@ app.use("/api/carts", carts);
 app.use("/api/orders", orders);
 app.use("/api/auth", auth);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 app.listen(port);

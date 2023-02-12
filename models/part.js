@@ -7,7 +7,6 @@ const Part = mongoose.model(
     model: {
       type: String,
       required: true,
-      unique: true,
       minlength: 5,
       maxlength: 255,
     },

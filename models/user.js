@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
   street: { type: String, required: true, minlength: 5, maxlength: 255 },
   city: { type: String, required: true, minlength: 5, maxlength: 255 },
   zip: { type: String, required: true, minlength: 4, maxlength: 9 },
-  imageSrc: { type: String, required: true },
+  imageSrc: { type: String },
   isAdmin: { type: Boolean },
   phone: { type: String, required: true, minlength: 5, maxlength: 14 },
 });
@@ -52,7 +52,7 @@ validate = (req) => {
     street: Joi.string().min(2).max(255).required(),
     city: Joi.string().min(2).max(255).required(),
     zip: Joi.string().min(4).max(9).required(),
-    imageSrc: Joi.string().required(),
+    imageSrc: Joi.string(),
     phone: Joi.string().required().min(5).max(14),
   });
   return schema.validate(req);

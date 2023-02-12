@@ -27,6 +27,9 @@ mongoose
   .catch((err) => console.error("Could not connect", err));
 
 app.use(express.json());
+app.get("/", () => {
+  console.log("Hello world");
+});
 app.use("/api/parts", parts);
 app.use("/api/users", users);
 app.use("/api/vehicles", vehicles);
